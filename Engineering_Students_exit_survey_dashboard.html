@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JU Engineering Exit Survey Analysis</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <style>
         * {
 		  margin: 0;
@@ -252,7 +255,24 @@
 		  outline: none;
 		  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
 		}
-		
+		.dataTables_wrapper {
+		  margin-top: 10px;
+		}
+		table.dataTable thead th {
+		  background: #f1f5f9 !important;
+		  color: #1e293b !important;
+		  font-weight: 600;
+		  text-transform: uppercase;
+		  letter-spacing: 0.5px;
+		  border-bottom: 2px solid #e2e8f0 !important;
+		  cursor: pointer;
+		}
+		table.dataTable tbody tr:hover {
+		  background-color: #f8fafc !important;
+		}
+		table.dataTable.no-footer {
+		  border-bottom: none;
+		}
 		@media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -346,7 +366,7 @@
 				<div class="dept-select-container">
 				  <label for="deptSelect">Select Department:</label>
 				  <select id="deptSelect">
-					<option value="All">All Departments (Overall)</option>
+					
 				  </select>
 				</div>
 				
@@ -463,41 +483,51 @@
 	let jsonData = {};
 	let totalResponses = 0;
 
-	// === Load JSON and Initialize ===
-	fetch("engg_dept_feedback.json")
-	  .then(res=>res.json())
-	  .then(data=>{
-		jsonData = data;
+// === Load JSON and Initialize ===
+fetch("engg_dept_feedback.json")
+  .then(res => res.json())
+  .then(data => {
+    // --- Build combined 'All' dataset before populating dropdown ---
+    const all = {};
+    chartIDs.forEach(k => {
+      all[k] = [];
+      Object.values(data).forEach(dept => {
+        all[k] = all[k].concat(dept[k]);
+      });
+    });
+    data["All"] = all; // add the combined dataset to data
+    jsonData = data;
 
-		const deptSelect = document.getElementById("deptSelect");
-		Object.keys(data).forEach(d=>{
-		  const opt = document.createElement("option");
-		  opt.value = d;
-		  opt.textContent = d;
-		  deptSelect.appendChild(opt);
-		});
+    const deptSelect = document.getElementById("deptSelect");
 
-		// === Compute overall combined dataset ===
-		const all = {};
-		chartIDs.forEach(k=>{
-		  all[k] = [];
-		  Object.values(data).forEach(dept=>{
-			all[k] = all[k].concat(dept[k]);
-		  });
-		});
-		jsonData["All"] = all;
+    // --- Get all department names EXCEPT 'All' and sort alphabetically ---
+    const deptNames = Object.keys(data)
+      .filter(name => name !== "All")
+      .sort((a, b) => a.localeCompare(b));
 
-		// === Compute and Render Department Participation Table ===
-		renderDeptParticipation(data);
+    // --- Add "All Departments (Overall)" FIRST ---
+    const optAll = document.createElement("option");
+    optAll.value = "All";
+    optAll.textContent = "All Departments (Overall)";
+    deptSelect.appendChild(optAll);
 
-		// === Create Charts ===
-		renderAllCharts("All");
+    // --- Add sorted department names ---
+    deptNames.forEach(d => {
+      const opt = document.createElement("option");
+      opt.value = d;
+      opt.textContent = d;
+      deptSelect.appendChild(opt);
+    });
 
-		deptSelect.addEventListener("change", e=>{
-		  const dept = e.target.value;
-		  updateCharts(dept);
-		});
-	  });
+    // --- Render data ---
+    renderDeptParticipation(data);
+    renderAllCharts("All");
+
+    deptSelect.addEventListener("change", e => {
+      const dept = e.target.value;
+      updateCharts(dept);
+    });
+  });
 
 	// === Compute Mean ===
 	function mean(arr){ return arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : "–"; }
@@ -603,6 +633,18 @@
 		  plugins: { legend: { display: false } },
 		  scales: { x: { beginAtZero: true } }
 		}
+	  });
+	
+	
+	 // === ✅ Initialize DataTable after rows are inserted ===
+	  if ($.fn.DataTable.isDataTable('#deptTable')) {
+		$('#deptTable').DataTable().destroy();
+	  }
+	  $('#deptTable').DataTable({
+		paging: false,
+		searching: false,
+		info: false,
+		order: [[2, 'desc']] // Sort by Responses column
 	  });
 	}
 </script>
