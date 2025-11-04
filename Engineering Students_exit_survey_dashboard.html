@@ -178,6 +178,37 @@
 		  padding-top: 20px;
 		  border-top: 1px solid #e2e8f0;
 		}
+				.rating-scale-note {
+		  background-color: #f9fafb;
+		  border-left: 4px solid #2563eb; /* blue accent */
+		  padding: 12px 16px;
+		  margin-bottom: 20px;
+		  border-radius: 8px;
+		  font-family: "Segoe UI", Tahoma, sans-serif;
+		  max-width: 600px;
+		  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+		}
+
+		.rating-scale-note p {
+		  margin: 0 0 6px;
+		  font-weight: 300;
+		  color: #1f2937;
+		}
+
+		.rating-scale-note ul {
+		  list-style-type: none;
+		  padding-left: 0;
+		  margin: 0;
+		  display: flex;
+		  flex-wrap: wrap;
+		  gap: 10px 16px;
+		}
+
+		.rating-scale-note li {
+		  color: #64748b;
+		  font-size: 14px;
+		}
+		
 		@media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
@@ -190,6 +221,20 @@
             .stat-number {
                 font-size: 2em;
             }
+			.chart-wrapper{
+				height: auto !important;
+				padding: 10px !important;
+			}
+			.rating-box {
+				display:block;
+				margin: 15px auto 0;
+				width: 90%;
+				box-sizing: border-box;
+				
+			}
+			.rating-box h4{
+				font-size: 1em;
+			}
         }
     </style>
 </head>
@@ -197,7 +242,7 @@
     <div class="container">
         <div class="header">
             <h1>📊 JU Student Exit Survey Analysis</h1>
-            <p>Engineering Departments - Comprehensive Feedback Report</p>
+            <p>Engineering Faculty - Comprehensive Feedback Report</p>
         </div>
         
         <div class="stats-grid">
@@ -222,7 +267,7 @@
                                 <th>Rank</th>
                                 <th>Department/School</th>
                                 <th>Responses</th>
-                                <th>% of Total</th>
+                                
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -240,10 +285,27 @@
             </div>
             
             <div class="section">
-			  <h2 class="section-title">Educational Feedback Analysis</h2>
-			  
-			  
 
+			  <h2 class="section-title">Educational Feedback Analysis</h2>
+			  			  <!-- Rating Scale Note -->
+				<div class="rating-scale-note">
+				  <p>Note: Ratings are based on a 5-point scale:</p>
+				  <ul>
+					<li><span>1 – Unsatisfactory</span></li>
+					<li><span>2 – Average</span></li>
+					<li><span>3 – Good</span></li>
+					<li><span>4 – Very Good</span></li>
+					<li><span>5 – Excellent</span></li>
+				  </ul>
+				</div>
+			  
+				<div style="margin: 20px 0;">
+				  <label for="deptSelect" style="font-weight:600;">Select Department: </label>
+				  <select id="deptSelect" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;">
+					<option value="All">All Departments (Overall)</option>
+				  </select>
+				</div>
+				
 			  <div class="grid-2">
 
 				<!-- Curriculum -->
@@ -346,155 +408,159 @@
     </div>
     
     <script>
-        const departments = [
-            {name: "Electrical Engineering", responses: 112},
-            {name: "Information Technology", responses: 94},
-            {name: "Computer Science and Engineering", responses: 62},
-            {name: "Civil Engineering", responses: 52},
-            {name: "Electronics and Telecommunication Engineering", responses: 51},
-            {name: "Power Engineering", responses: 47},
-            {name: "Mechanical Engineering", responses: 41},
-            {name: "Metallurgical and Materials Engineering", responses: 31},
-            {name: "Architecture", responses: 20},
-            {name: "Food Technology and Biochemical Engineering", responses: 17},
-            {name: "Chemical Engineering", responses: 16},
-            {name: "Construction Engineering", responses: 16},
-            {name: "Instrumentation and Electronics Engineering", responses: 16},
-            {name: "Pharmaceutical Technology", responses: 16},
-            {name: "Printing Engineering", responses: 10},
-            {name: "School Of Mobile Computing and Communication", responses: 8},
-            {name: "School Of Education Technology", responses: 7},
-            {name: "School Of Materials Science and Nanotechnology", responses: 6},
-            {name: "School Of Bio-Science and Engineering", responses: 4},
-            {name: "Production Engineering", responses: 1},
-            {name: "School of Environmental Studies", responses: 1},
-            {name: "School Of Illumination Science, Engineering and Design", responses: 1},
-            {name: "School Of Nuclear Studies and Application", responses: 1}
-        ];
-        
-        const total = 630;
-        
-        // Populate table
-        const tbody = document.querySelector('#deptTable tbody');
-        departments.forEach((dept, index) => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td><strong>${index + 1}</strong></td>
-                <td>${dept.name}</td>
-                <td><strong>${dept.responses}</strong></td>
-                <td>${((dept.responses / total) * 100).toFixed(1)}%</td>
-            `;
-        });
-        
-        // Top departments chart
-        const topDepts = departments.slice(0, 10);
-        new Chart(document.getElementById('topDeptChart'), {
-            type: 'bar',
-            data: {
-                labels: topDepts.map(d => d.name),
-                datasets: [{
-                    label: 'Number of Responses',
-                    data: topDepts.map(d => d.responses),
-                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
-                    borderColor: 'rgba(102, 126, 234, 1)',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: {
-                    legend: {display: false}
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-        
-        const ratings = {
-      curriculum: [2,5,3,5,3,4,4,3,3,3,5,5,4,5,5,4,5,4,4,5,3,4,4,4,3,5,4,3,3,5,4,4,4,4,4,2,3,3,5,3,3,4,4,3,4,3,5,4,4,4,1,4,5,5,4,4,3,5,4,5,3,4,4,5,3,3,3,4,3,3,3,4,4,3,4,4,2,5,5,5,3,4,3,1,3,5,4,4,5,4,5,2,5,4,4,3,3,4,4,5,3,5,5,4,5,3,4,5,5,5,5,5,5,5,3,4,4,5,4,5,4,4,5,5,4,4,4,4,4,4,4,3,5,4,5,4,5,4,5,3,4,5,1,3,4,4,4,4,4,5,5,4,5,5,5,4,5,5,4,4,5,2,5,5,4,5,4,4,5,4,3,5,3,5,3,5,3,5,4,4,2,2,4,2,4,3,5,3,5,3,4,3,5,5,4,3,5,5,5,5,3,5,5,5,4,4,3,1,4,3,5,5,4,5,5,3,5,3,5,5,4,4,2,3,3,3,2,4,4,5,1,2,4,5,4,5,3,5,5,5,3,4,3,5,4,4,3,4,3,3,3,4,2,4,5,5,5,4,3,4,2,4,1,3,4,5,4,3,3,3,5,3,5,4,5,3,4,5,5,3,1,4,3,3,4,4,5,4,5,3,3,5,5,5,4,4,4,5,4,4,5,4,3,4,4,5,3,4,3,5,5,4,3,5,3,4,4,5,4,5,5,5,4,4,5,4,3,4,3,4,5,3,5,5,5,5,3,5,5,4,4,5,5,5,2,3,5,5,3,3,4,5,4,5,5,5,5,5,4,5,4,3,4,5,4,5,4,5,4,4,4,3,4,5,4,5,5,4,5,4,5,5,5,4,5,4,5,5,5,2,3,5,4,4,3,5,5,5,5,5,4,5,5,5,4,4,5,5,5,5,5,4,5,5,5,4,5,5,5,5,5,3,5,5,4,3,5,5,5,4,4,4,5,4,5,5,5,5,4,3,3,5,5,5,5,5,4,3,5,5,5,4,1,4,5,5,5,5,5,4,4,4,5,5,5,5,4,4,5,5,5,3,3,5,4,3,5,5,4,3,3,5,3,4,4,3,4,5,5,3,3,3,5,5,5,1,4,3,3,2,3,4,4,5,3,3,5,4,5,5,4,4,5,3,5,5,5,5,5,5,3,5,5,5,5,3,3,4,4,3,3,3,3,5,5,5,3,4,4,4,4,4,4,4,4,5,4,5,4,4,5,1,5,5,4,4,5,5,4,4,4,5,4,3,5,4,5,5,4,5,4,4,5,5,4,4,5,4,4,5,5,3,3,4,4,4,5,3,5,5,4,4,5,2,4,4,4,4,2,4,4,5,5,3,5,5,4,4,4,5,4,5,5,5,4,5,5,4,5,4,4,4,5,5,5,5,4,5,4,5],
-      learning: [4,5,3,5,4,3,4,3,2,4,5,5,5,5,5,3,5,5,5,5,3,4,4,4,3,4,4,4,3,5,4,3,3,5,3,2,3,3,5,3,3,4,3,2,5,4,5,4,4,4,1,4,5,5,4,5,4,5,4,4,5,4,4,2,3,2,4,5,3,2,4,4,4,3,4,4,3,5,5,5,3,4,3,1,4,5,5,3,5,5,5,4,5,4,5,4,4,4,4,5,4,3,5,5,4,5,5,5,5,5,5,5,5,5,3,3,5,5,4,5,4,4,5,5,4,4,5,4,4,4,4,4,5,5,5,5,4,4,5,3,4,5,3,1,3,4,5,4,5,5,5,5,5,5,5,4,5,5,4,3,5,4,5,5,5,5,4,4,5,4,3,5,5,5,4,5,3,5,4,5,2,1,3,1,4,4,3,3,5,4,4,3,5,5,4,4,5,5,5,5,4,5,5,4,4,4,4,2,2,4,4,5,2,5,4,4,5,4,5,5,4,3,3,3,5,3,3,5,4,5,2,2,4,5,4,5,2,5,5,5,3,5,3,5,4,4,3,4,4,3,3,4,4,5,5,5,4,4,4,4,2,3,3,4,5,4,4,4,2,3,5,4,5,5,5,4,4,5,5,2,2,4,4,4,4,4,5,3,5,4,4,5,5,5,4,4,5,5,4,5,4,4,4,4,5,5,4,3,3,5,5,4,4,5,4,5,4,4,5,5,3,5,4,4,4,5,4,4,5,4,5,3,5,5,5,5,5,5,5,4,4,5,5,4,5,5,5,5,5,4,3,5,5,5,5,5,5,5,2,5,4,3,3,5,3,5,4,5,4,4,4,4,4,5,4,5,5,4,5,4,5,5,5,4,5,4,5,5,5,1,3,5,5,5,3,5,5,5,5,5,4,4,4,5,3,3,5,5,5,5,5,4,5,4,5,4,5,5,5,4,5,3,5,5,4,1,5,5,5,4,4,4,5,4,5,5,5,5,4,2,4,5,5,5,5,5,4,3,4,5,1,4,1,4,3,4,4,4,4,5,4,4,5,4,5,4,2,5,4,4,4,1,4,5,4,3,3,4,4,3,3,5,5,4,5,3,4,5,5,2,3,3,5,5,5,1,2,3,2,3,3,2,4,5,2,4,4,2,5,5,5,4,5,3,4,5,4,5,5,5,3,3,5,4,5,5,2,5,4,5,4,1,3,5,5,5,2,3,2,4,4,5,4,5,4,5,4,5,4,5,5,5,5,5,4,5,5,4,5,3,5,5,3,4,5,3,5,5,3,5,5,4,5,5,5,4,5,5,4,5,5,3,5,4,5,4,5,5,5,5,4,4,5,1,4,4,4,4,3,5,3,4,5,4,5,5,3,4,4,5,4,5,5,5,4,5,5,4,3,5,5,4,5,5,5,5,4,5,5,5],
-      library: [3,4,4,5,4,4,4,4,2,4,5,5,5,5,5,3,5,5,5,5,4,3,5,3,4,5,5,4,3,5,3,4,3,5,4,3,5,3,5,4,2,5,3,3,5,5,5,2,3,5,4,4,5,5,5,5,3,5,4,4,5,4,5,5,4,4,4,4,4,2,5,5,4,5,4,3,2,5,4,5,4,4,3,2,4,4,5,4,5,5,4,2,4,3,5,5,2,4,5,5,4,4,5,5,4,5,5,5,5,5,5,5,5,5,3,4,5,5,4,5,4,3,5,5,4,5,4,4,4,4,3,4,3,4,4,5,5,3,5,4,5,5,4,5,4,3,4,4,5,3,5,5,5,5,5,5,5,5,4,4,5,4,4,5,3,5,4,3,5,4,4,5,4,5,4,5,4,5,3,5,4,4,3,4,3,4,4,2,5,3,4,4,5,5,5,5,5,5,5,5,4,5,5,3,4,4,4,4,5,4,4,5,5,5,5,4,5,5,5,5,5,3,4,5,5,3,5,5,3,5,3,5,5,5,3,5,3,5,5,5,3,2,3,5,4,4,4,4,4,3,3,4,4,5,5,5,5,5,4,4,4,5,3,4,4,3,5,4,2,2,5,4,5,4,5,4,3,3,5,3,3,4,5,3,5,4,4,2,5,4,4,5,5,5,5,5,5,5,4,5,4,4,4,5,4,5,4,3,4,5,4,5,4,5,4,4,5,5,3,5,5,4,5,2,4,5,4,4,5,4,4,3,3,5,5,5,5,5,5,4,4,5,5,4,5,4,5,5,4,4,4,5,5,5,5,5,5,5,4,5,4,4,5,4,4,5,3,5,4,4,5,3,5,5,4,5,5,4,5,4,5,5,5,4,3,5,5,5,5,3,3,5,5,5,3,5,5,5,5,5,4,5,3,5,5,4,5,5,5,5,5,5,5,4,5,5,5,4,5,4,2,5,5,5,4,5,5,5,5,3,4,4,5,4,5,5,5,5,4,4,5,5,5,5,5,5,4,5,5,5,5,5,1,5,5,4,4,4,3,5,4,3,5,2,5,4,1,5,3,3,2,1,4,1,3,2,5,3,3,2,2,5,5,3,5,2,4,3,5,2,2,2,5,5,5,1,3,3,3,2,4,5,3,4,4,3,5,2,5,5,4,4,5,1,3,5,5,5,5,5,3,5,5,4,5,2,3,4,4,5,5,3,4,5,5,5,3,3,2,4,3,5,3,4,5,5,4,5,4,5,5,1,5,5,4,5,5,4,5,5,5,5,4,4,5,3,5,5,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,4,5,2,5,5,5,5,5,4,3,5,5,4,2,3,4,5,4,2,3,4,4,3,3,5,5,5,5,5,4,5,5,4,3,5,4,5,5,5,5,5,4,5,5,5],
-      lab: [1,5,3,4,4,3,3,1,5,5,4,5,2,5,3,5,4,4,5,3,4,3,2,1,3,4,3,3,2,4,3,3,5,3,5,4,2,5,5,3,4,5,5,2,4,3,3,4,5,3,4,4,5,4,3,4,4,4,4,3,4,4,2,5,5,4,4,5,4,3,3,5,5,2,4,3,1,5,5,2,2,5,5,3,3,4,3,4,4,3,4,5,5,3,2,5,4,3,5,4,5,4,5,5,5,5,3,4,5,3,5,3,5,5,5,4,1,4,3,4,4,4,3,2,5,4,5,3,5,3,5,4,5,5,3,4,5,5,2,4,5,5,5,5,4,5,5,3,3,5,3,5,4,1,5,4,4,5,4,5,5,5,2,5,3,5,4,4,3,1,3,2,4,4,4,2,5,3,4,3,5,5,5,5,5,5,5,4,5,5,3,5,4,3,1,3,3,3,5,3,5,4,3,5,4,5,5,4,2,2,2,3,2,3,5,3,5,1,4,3,4,4,5,2,5,5,5,3,3,3,5,4,4,4,4,3,3,3,4,2,4,5,5,5,3,3,4,3,4,4,3,2,4,4,3,4,3,4,3,5,4,5,4,2,4,3,1,3,4,2,3,4,3,4,2,5,1,3,5,4,5,3,3,3,5,3,5,3,4,1,4,4,5,3,2,2,3,4,5,2,5,2,4,3,4,2,5,3,3,3,2,4,4,2,3,5,3,5,2,1,5,5,5,2,5,5,3,4,5,4,3,3,2,5,5,4,4,3,5,5,5,5,5,5,5,2,5,4,3,5,5,4,5,4,4,4,4,4,5,4,5,5,5,5,4,5,4,5,5,5,3,3,3,5,5,5,2,3,5,5,5,3,5,5,5,5,5,2,5,4,5,4,5,5,5,5,5,4,5,4,5,4,5,3,5,4,3,2,5,5,3,2,5,5,5,3,5,3,5,3,5,5,5,5,4,2,4,1,5,5,5,5,4,5,3,5,2,2,4,4,3,4,3,3,4,3,3,5,3,5,4,4,3,3,3,3,2,3,1,3,2,5,3,2,2,2,5,3,3,4,4,2,2,5,2,2,2,4,5,5,1,1,3,4,3,2,2,4,5,2,3,4,2,5,5,3,4,5,3,3,5,4,5,5,5,3,4,5,3,5,2,3,4,3,2,1,2,5,5,5,3,1,3,4,2,2,2,3,5,4,5,4,1,4,5,4,5,4,4,5,5,4,5,3,2,3,4,3,4,5,5,5,4,3,4,5,5,5,4,5,5,4,5,5,3,5,3,5,3,5,5,5,1,3,4,3,3,2,4,3,1,3,3,5,3,3,4,4,2,2,2,5,4,5,5,4,5,5,4,2,3,5,5,5,5,5,5,4,5,5,5],
-      wifi: [2,5,4,4,2,5,3,4,4,3,5,3,4,4,5,5,5,5,5,5,4,4,5,4,3,5,3,3,3,3,3,2,4,2,4,2,4,4,5,3,2,4,5,4,4,3,5,3,5,4,3,3,3,4,5,5,2,5,3,1,3,4,4,5,2,3,4,4,3,4,5,3,3,5,3,4,3,5,4,2,2,4,4,1,5,5,5,4,5,5,5,2,4,5,3,4,3,5,3,5,3,3,5,5,3,5,4,5,4,5,4,5,5,5,3,4,5,5,4,5,4,5,5,5,4,1,4,4,3,3,3,4,5,5,4,4,5,3,5,4,5,5,5,1,5,2,4,5,5,3,5,5,5,5,5,4,5,5,4,4,5,4,5,4,4,5,4,4,5,3,3,5,3,5,3,5,2,5,4,5,3,4,3,3,4,4,5,2,5,3,4,3,5,5,2,5,5,5,5,5,4,5,4,3,5,4,3,3,3,1,3,4,3,5,4,4,5,3,5,5,5,1,1,5,2,1,1,4,4,5,2,3,3,5,4,5,2,5,5,5,3,2,3,5,4,4,5,4,4,2,3,4,5,5,5,5,5,5,3,3,3,5,2,4,2,4,5,4,4,5,5,4,5,5,5,4,3,4,4,4,3,5,2,4,4,3,5,3,5,5,4,5,5,5,4,5,5,5,3,3,4,4,2,4,5,5,3,3,1,4,4,3,3,3,4,5,5,4,3,5,2,5,4,3,4,5,2,3,4,4,4,4,2,5,5,3,3,5,5,2,4,5,5,3,4,4,5,5,4,5,4,5,5,5,5,5,5,5,5,5,4,2,5,4,3,2,5,5,4,4,4,4,4,5,4,5,5,4,5,4,5,5,5,3,3,5,5,5,5,2,3,5,5,4,4,5,5,5,5,5,4,5,5,5,4,4,5,5,5,5,5,4,5,4,5,5,5,5,5,4,3,4,5,5,4,2,5,5,5,4,5,4,5,4,5,5,5,5,4,4,3,1,5,5,5,5,4,3,4,5,1,2,2,2,3,3,3,3,3,4,4,3,5,5,5,5,2,3,2,2,4,4,4,1,2,5,1,4,2,2,2,5,3,3,4,3,3,3,5,4,2,5,4,5,5,1,3,3,5,2,3,3,5,4,5,4,5,3,5,5,4,4,5,1,5,5,4,5,5,5,2,5,5,4,5,5,3,3,4,4,3,4,5,5,5,5,3,2,3,4,3,3,5,4,5,5,4,5,4,5,4,4,5,5,4,5,5,5,5,5,5,5,5,4,4,5,5,5,4,5,5,5,5,5,5,5,5,5,4,5,5,4,5,5,5,5,5,3,5,5,4,4,4,5,3,1,5,4,4,5,4,5,2,2,2,2,4,5,5,5,4,5,5,5,4,4,5,4,3,5,3,3,5,5,5,5,4,5,5,5],
-      career: [2,4,2,5,3,4,4,4,3,3,5,3,4,5,5,3,5,4,5,5,3,3,5,4,1,4,3,4,3,5,2,2,3,2,4,2,3,5,5,4,3,5,4,2,5,3,5,4,4,4,4,4,5,5,4,5,4,5,3,3,2,4,4,3,2,1,4,4,5,5,3,5,3,5,4,4,3,5,5,4,2,3,3,1,5,5,5,3,5,5,5,2,3,4,5,3,4,4,3,5,4,5,5,5,3,4,4,5,5,5,5,5,5,5,3,4,4,5,4,5,4,4,5,5,3,3,5,4,4,3,5,3,5,4,5,5,4,5,5,4,5,5,2,1,3,4,4,5,4,5,5,5,5,5,5,4,5,5,5,2,5,4,5,5,3,5,4,4,5,4,5,5,3,5,1,5,4,5,4,5,2,1,3,1,4,4,5,2,5,4,3,3,5,5,4,1,5,5,5,5,3,5,4,4,5,4,3,1,3,3,4,4,3,5,2,4,5,3,5,5,5,1,2,3,3,2,2,5,4,5,1,2,4,5,3,5,2,5,5,5,4,3,3,5,4,4,3,4,4,3,3,4,5,3,5,5,5,5,3,3,2,5,2,3,5,4,4,4,3,5,5,4,5,4,4,4,4,5,3,2,1,4,3,5,4,5,5,3,4,4,3,5,5,5,4,4,5,5,5,4,4,4,4,3,4,5,4,3,3,4,4,3,4,5,2,5,4,4,3,5,1,5,3,4,4,4,2,5,5,4,5,3,4,5,5,1,3,5,5,4,5,5,5,3,1,5,5,5,3,4,3,5,5,5,5,3,5,5,2,5,4,2,2,5,4,5,4,5,4,4,4,3,4,5,3,5,5,4,5,4,5,5,5,3,5,4,3,5,5,1,3,5,3,5,3,5,5,5,5,5,3,5,5,5,3,3,5,5,5,5,5,4,5,5,5,3,5,3,5,4,3,2,5,5,5,2,5,5,5,4,5,5,5,3,5,5,5,5,4,3,4,5,5,5,5,5,4,5,5,5,1,4,1,4,5,5,5,5,5,5,2,5,5,5,5,5,2,5,3,3,4,1,4,5,3,2,2,5,4,4,4,5,5,4,5,2,4,4,5,1,4,4,5,5,5,1,1,3,1,3,2,3,1,3,2,3,4,1,5,5,4,3,5,1,4,5,4,5,5,5,3,3,5,4,5,4,3,3,5,4,5,1,3,4,5,4,3,1,2,2,3,5,2,4,5,3,4,5,4,5,5,5,4,5,4,4,5,5,5,3,3,5,3,5,5,3,5,5,5,5,5,4,5,5,4,3,5,3,4,5,5,3,3,4,4,4,5,5,5,5,4,4,5,5,4,1,4,3,1,3,3,5,5,4,1,1,2,1,1,5,2,5,5,5,4,5,5,4,3,5,5,5,5,5,5,5,4,5,4,5]
-        
-    };
-// === Compute Average ===
-function mean(arr) { return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2); }
-const avgRatings = Object.fromEntries(Object.entries(ratings).map(([k,v]) => [k, mean(v)]));
+	const chartIDs = ["curriculum","learning","library","lab","wifi","career"];
+	const chartTitles = {
+	  curriculum:"Curriculum & Syllabus",
+	  learning:"Learning Environment",
+	  library:"Library Infrastructure",
+	  lab:"Laboratory Infrastructure",
+	  wifi:"Wi-Fi & Internet",
+	  career:"Career Guidance"
+	};
+	let charts = {};
+	let jsonData = {};
+	let totalResponses = 0;
 
-// === Summary Cards ===
-const summary = document.getElementById("avgSummary");
-if (summary) {
-  Object.entries(avgRatings).forEach(([key, value]) => {
-    const titles = {
-      curriculum: "Curriculum & Syllabus",
-      learning: "Learning Environment",
-      library: "Library Infrastructure",
-      lab: "Laboratory Infrastructure",
-      wifi: "Wi-Fi Facility",
-      career: "Career Guidance"
-    };
-    const card = document.createElement("div");
-    card.className = "summary-card";
-    card.innerHTML = `
-      <h3>${titles[key]}</h3>
-      <div class="summary-value">${value}</div>
-    `;
-    summary.appendChild(card);
-  });
-}
+	// === Load JSON and Initialize ===
+	fetch("engg_dept_feedback.json")
+	  .then(res=>res.json())
+	  .then(data=>{
+		jsonData = data;
 
-// === Chart Creator ===
-function createBarChart(canvasId, dataArr){
-  const counts=[1,2,3,4,5].map(r=>dataArr.filter(v=>v===r).length);
-  const total=dataArr.length;
-  new Chart(document.getElementById(canvasId),{
-    type:'bar',
-    data:{
-      labels:['1','2','3','4','5'],
-      datasets:[{data:counts,backgroundColor:'#f59e0b',borderRadius:6}]
-    },
-    options:{
-      responsive:true,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label:(ctx)=>{
-          const count=ctx.raw;const pct=((count/total)*100).toFixed(1);
-          return `${count} responses (${pct}%)`;
-        }}}
-      },
-      scales:{y:{beginAtZero:true,title:{display:true,text:'Responses'}}}
-    }
-  });
-}
+		const deptSelect = document.getElementById("deptSelect");
+		Object.keys(data).forEach(d=>{
+		  const opt = document.createElement("option");
+		  opt.value = d;
+		  opt.textContent = d;
+		  deptSelect.appendChild(opt);
+		});
 
-// === Star Renderer ===
-function renderStars(sectionId, avgValue){
-  const avg=parseFloat(avgValue);
-  document.getElementById(`${sectionId}AvgText`).textContent=avg.toFixed(2);
-  
-}
+		// === Compute overall combined dataset ===
+		const all = {};
+		chartIDs.forEach(k=>{
+		  all[k] = [];
+		  Object.values(data).forEach(dept=>{
+			all[k] = all[k].concat(dept[k]);
+		  });
+		});
+		jsonData["All"] = all;
 
-// === Create Charts and Stars ===
-createBarChart("curriculumChart",ratings.curriculum);
-createBarChart("learningChart",ratings.learning);
-createBarChart("libraryChart",ratings.library);
-createBarChart("labChart",ratings.lab);
-createBarChart("wifiChart",ratings.wifi);
-createBarChart("careerChart",ratings.career);
+		// === Compute and Render Department Participation Table ===
+		renderDeptParticipation(data);
 
-renderStars("curriculum",avgRatings.curriculum);
-renderStars("learning",avgRatings.learning);
-renderStars("library",avgRatings.library);
-renderStars("lab",avgRatings.lab);
-renderStars("wifi",avgRatings.wifi);
-renderStars("career",avgRatings.career);
+		// === Create Charts ===
+		renderAllCharts("All");
+
+		deptSelect.addEventListener("change", e=>{
+		  const dept = e.target.value;
+		  updateCharts(dept);
+		});
+	  });
+
+	// === Compute Mean ===
+	function mean(arr){ return arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : "–"; }
+
+	// === Create Chart ===
+	function createChart(canvasId, arr){
+	  const counts = [1,2,3,4,5].map(r=>arr.filter(v=>v===r).length);
+	  const total = arr.length;
+	  return new Chart(document.getElementById(canvasId),{
+		type:'bar',
+		data:{
+		  labels:['1','2','3','4','5'],
+		  datasets:[{data:counts,backgroundColor:'#60a5fa',borderRadius:6}]
+		},
+		options:{
+		  responsive:true,
+		  plugins:{
+			legend:{display:false},
+			tooltip:{callbacks:{label:ctx=>{
+			  const c=ctx.raw,pct=((c/total)*100).toFixed(1);
+			  return `${c} responses (${pct}%)`;
+			}}}
+		  },
+		  scales:{y:{beginAtZero:true,title:{display:true,text:'Responses'}}}
+		}
+	  });
+	}
+
+	// === Render All Charts ===
+	function renderAllCharts(dept){
+	  chartIDs.forEach(k=>{
+		const arr = jsonData[dept][k];
+		charts[k] = createChart(k+"Chart", arr);
+		document.getElementById(k+"AvgText").textContent = mean(arr);
+	  });
+	}
+
+	// === Update Charts when Department Changes ===
+	function updateCharts(dept){
+	  chartIDs.forEach(k=>{
+		const arr = jsonData[dept][k];
+		const counts = [1,2,3,4,5].map(r=>arr.filter(v=>v===r).length);
+		const total = arr.length;
+		const ch = charts[k];
+		ch.data.datasets[0].data = counts;
+		ch.options.plugins.tooltip.callbacks.label = ctx=>{
+		  const c=ctx.raw,pct=((c/total)*100).toFixed(1);
+		  return `${c} responses (${pct}%)`;
+		};
+		ch.update();
+		document.getElementById(k+"AvgText").textContent = mean(arr);
+	  });
+	}
+
+	// === Render Department Participation Table and Top Chart ===
+	function renderDeptParticipation(data){
+	  const tbody = document.querySelector("#deptTable tbody");
+	  tbody.innerHTML = "";
+
+	  const deptStats = Object.entries(data)
+	  .filter(([name]) => name !== "All")
+	  .map(([name, vals]) => {
+		const total = chartIDs.reduce((sum, k) => sum + vals[k].length, 0) / chartIDs.length;
+		return { name, responses: Math.round(total) };
+	  });
+
+	  // Sort by responses descending
+	  deptStats.sort((a,b)=>b.responses - a.responses);
+
+	  totalResponses = deptStats.reduce((a,b)=>a+b.responses,0);
+
+	  deptStats.forEach((dept,i)=>{
+		const row = tbody.insertRow();
+		row.innerHTML = `
+		  <td><strong>${i+1}</strong></td>
+		  <td>${dept.name}</td>
+		  <td><strong>${dept.responses}</strong></td>
+		  
+		`;
+	  });
+
+	  // === Top Departments Chart ===
+	  const topDepts = deptStats.slice(0,10);
+	  const ctx = document.getElementById("topDeptChart");
+	  new Chart(ctx, {
+		type: 'bar',
+		data: {
+		  labels: topDepts.map(d=>d.name),
+		  datasets: [{
+			label: 'Responses',
+			data: topDepts.map(d=>d.responses),
+			backgroundColor: 'rgba(99, 102, 241, 0.8)',
+			borderColor: 'rgba(79, 70, 229, 1)',
+			borderWidth: 2
+		  }]
+		},
+		options: {
+		  responsive: true,
+		  maintainAspectRatio: false,
+		  indexAxis: 'y',
+		  plugins: { legend: { display: false } },
+		  scales: { x: { beginAtZero: true } }
+		}
+	  });
+	}
 </script>
 </body>
 </html>
